@@ -1,39 +1,22 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# shape_progress_bar
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+`shape_progress_bar` is a Flutter package that allows you to create animated progress borders around widgets in various shapes — such as boxes, stars, and other custom paths.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+It supports customizable border colors, gradient animations, looping, glowing effects, and starting corner selection, making it perfect for progress indicators or decorative UI elements.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- Animate borders of widgets in box or custom shapes
+- Control animation duration and direction
+- Gradient border support
+- Glowing edge effects
+- Customizable border width, radius, and starting corner
+- Looping animation toggle
 
-## Getting started
+## Installation
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+Add this to your `pubspec.yaml`:
 
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
-```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+```yaml
+dependencies:
+  shape_progress_bar: ^1.0.0
