@@ -1,0 +1,27 @@
+name: example
+description: "Shape Progressbar Example."
+publish_to: 'none' # Prevent publishing example app
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # Add your package as a local dependency:
+  shape_progress_bar:
+    path: ../  # <-- Adjust if your package root folder is not one level up
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
