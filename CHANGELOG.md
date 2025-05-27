@@ -1,3 +1,6 @@
-## 0.0.1
+## [1.0.0] - 2025-05-27
 
-* TODO: Describe initial release.
+- Initial release.
+- Added `AnimatedBorderBox` widget to animate box borders.
+- Supports shapes like rectangles and stars.
+- Includes looping, gradient borders, and customizable glow effects.
