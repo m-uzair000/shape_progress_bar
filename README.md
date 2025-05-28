@@ -50,9 +50,6 @@ You can also create **custom paths** to draw borders on virtually any shape.
 |---------|-------|----------|
 | ![Diamond](assets/images/diamond.gif) | ![Arrow](assets/images/arrow.gif) | ![Parabola](assets/images/parabola.gif) |
 
-> ⚠️ Make sure these image paths match your project's `assets/images/` directory. If not, update them accordingly.
-
----
 
 ## 🚀 Installation
 
