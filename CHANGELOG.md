@@ -1,6 +1,9 @@
-## [1.0.0] - 2025-05-27
+## [1.0.1] - 2025-05-27
 
-- Initial release.
-- Added `AnimatedBorderBox` widget to animate box borders.
-- Supports shapes like rectangles and stars.
-- Includes looping, gradient borders, and customizable glow effects.
+- Expanded support for multiple shapes: `rectangle`, `triangle`, `star`, `heart`, `oval`, `parabola`, `diamond`, `pentagon`, and `arrow`.
+- Added support for directional shapes like `arrow` with up/down/left/right options.
+- Introduced rounded and animated arrow heads that animate in parallel with progress.
+- Implemented gradient support for all progress borders.
+- Added looping and fixed value animation modes.
+- Improved customization options: border width, glow width, gradient colors, and animation duration.
+- Updated README with shape previews and usage examples.

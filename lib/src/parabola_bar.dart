@@ -1,9 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
-enum BorderCorner { topLeft, topRight, bottomRight, bottomLeft }
-
-class RectangleBox extends StatefulWidget {
+class ParabolaBar extends StatefulWidget {
   final double width;
   final double height;
   final Duration duration;
@@ -11,15 +9,14 @@ class RectangleBox extends StatefulWidget {
   final Color glowColor;
   final double borderWidth;
   final double? glowWidth;
-  final BorderCorner startCorner;
-  final double borderRadius;
   final Widget? child;
   final bool loop;
-  final bool reverse; // ignored here
+  final double? value;
   final bool useGradient;
   final List<Color> gradientColors;
+  final bool inverted;
 
-  const RectangleBox({
+  const ParabolaBar({
     Key? key,
     required this.width,
     required this.height,
@@ -28,44 +25,59 @@ class RectangleBox extends StatefulWidget {
     this.glowColor = Colors.orange,
     this.borderWidth = 4,
     this.glowWidth,
-    this.startCorner = BorderCorner.topLeft,
-    this.borderRadius = 0,
     this.child,
     this.loop = false,
-    this.reverse = true, // ignored
+    this.value,
     this.useGradient = false,
     this.gradientColors = const [Colors.white],
+    this.inverted = false,
   }) : super(key: key);
 
   @override
-  _RectangleBoxState createState() => _RectangleBoxState();
+  _ParabolaBarState createState() => _ParabolaBarState();
 }
 
-class _RectangleBoxState extends State<RectangleBox>
-    with SingleTickerProviderStateMixin {
+class _ParabolaBarState extends State<ParabolaBar> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _progress;
+  double _oldValue = 0.0;
 
   @override
   void initState() {
     super.initState();
 
-    _controller = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-    );
+    _controller = AnimationController(vsync: this, duration: widget.duration);
 
-    _progress = Tween<double>(begin: 0, end: 1).animate(_controller);
-
-    if (widget.loop) {
-      _controller.repeat();
+    if (widget.value == null) {
+      _progress = Tween<double>(begin: 0, end: 1).animate(_controller);
+      if (widget.loop) {
+        _controller.repeat();
+      } else {
+        _controller.forward();
+      }
     } else {
-      _controller.addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          _controller.stop();
-        }
-      });
+      _progress = AlwaysStoppedAnimation(widget.value!);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant ParabolaBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.value != null && widget.value != _oldValue) {
+      final double newValue = widget.value!;
+      final diff = (newValue - _oldValue).abs();
+      final newDuration = Duration(milliseconds: (widget.duration.inMilliseconds * diff).toInt());
+
+      _progress = Tween<double>(begin: _oldValue, end: newValue).animate(
+        CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+      );
+
+      _controller.duration = newDuration;
+      _controller.reset();
       _controller.forward();
+
+      _oldValue = newValue;
     }
   }
 
@@ -75,38 +87,23 @@ class _RectangleBoxState extends State<RectangleBox>
     super.dispose();
   }
 
-  double _cornerToAngle(BorderCorner corner) {
-    switch (corner) {
-      case BorderCorner.topLeft:
-        return 0;
-      case BorderCorner.topRight:
-        return 90;
-      case BorderCorner.bottomRight:
-        return 180;
-      case BorderCorner.bottomLeft:
-        return 270;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final startAngle = _cornerToAngle(widget.startCorner);
     final glowWidth = widget.glowWidth ?? widget.borderWidth + 2;
 
     return AnimatedBuilder(
       animation: _progress,
       builder: (_, __) {
         return CustomPaint(
-          painter: _TracingBorderPainter(
+          painter: _ParabolaPainter(
             progress: _progress.value,
             borderColor: widget.borderColor,
             glowColor: widget.glowColor,
             borderWidth: widget.borderWidth,
             glowWidth: glowWidth,
-            startAngle: startAngle,
-            borderRadius: widget.borderRadius,
             useGradient: widget.useGradient,
             gradientColors: widget.gradientColors,
+            inverted: widget.inverted,
           ),
           child: SizedBox(
             width: widget.width,
@@ -119,41 +116,58 @@ class _RectangleBoxState extends State<RectangleBox>
   }
 }
 
-class _TracingBorderPainter extends CustomPainter {
+class _ParabolaPainter extends CustomPainter {
   final double progress;
   final Color borderColor;
   final Color glowColor;
   final double borderWidth;
   final double glowWidth;
-  final double startAngle;
-  final double borderRadius;
   final bool useGradient;
   final List<Color> gradientColors;
+  final bool inverted;
 
-  _TracingBorderPainter({
+  _ParabolaPainter({
     required this.progress,
     required this.borderColor,
     required this.glowColor,
     required this.borderWidth,
     required this.glowWidth,
-    required this.startAngle,
-    required this.borderRadius,
     required this.useGradient,
     required this.gradientColors,
+    required this.inverted,
   });
+
+  Path _createParabolaPath(Size size) {
+    final path = Path();
+    final a = 4 * size.height / pow(size.width, 2);
+    final startX = -size.width / 2;
+    final endX = size.width / 2;
+    final step = size.width / 100;
+
+    for (double x = startX; x <= endX; x += step) {
+      final px = x + size.width / 2;
+      final py = a * x * x;
+      final y = inverted ? size.height - py : py;
+      if (x == startX) {
+        path.moveTo(px, y);
+      } else {
+        path.lineTo(px, y);
+      }
+    }
+
+    return path;
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
-    final rect = Offset.zero & size;
-    final borderPath = Path()
-      ..addRRect(RRect.fromRectAndRadius(rect, Radius.circular(borderRadius)));
+    final path = _createParabolaPath(size);
 
     final borderPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = borderWidth
       ..color = borderColor;
 
-    canvas.drawPath(borderPath, borderPaint);
+    canvas.drawPath(path, borderPaint);
 
     final glowPaint = Paint()
       ..style = PaintingStyle.stroke
@@ -165,38 +179,27 @@ class _TracingBorderPainter extends CustomPainter {
         colors: gradientColors,
         startAngle: 0,
         endAngle: 2 * pi,
-        transform: GradientRotation((startAngle % 360) * pi / 180),
-      ).createShader(rect);
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
     } else {
       glowPaint.color = glowColor;
     }
 
-    final metric = borderPath.computeMetrics().first;
+    final metric = path.computeMetrics().first;
     final totalLength = metric.length;
-    final offset = (startAngle % 360) / 360.0;
-    final start = totalLength * offset;
-    final end = start + totalLength * progress;
+    final end = totalLength * progress;
 
-    if (end <= totalLength) {
-      final glowPath = metric.extractPath(start, end);
-      canvas.drawPath(glowPath, glowPaint);
-    } else {
-      final part1 = metric.extractPath(start, totalLength);
-      final part2 = metric.extractPath(0, end - totalLength);
-      canvas.drawPath(part1, glowPaint);
-      canvas.drawPath(part2, glowPaint);
-    }
+    final glowPath = metric.extractPath(0, end);
+    canvas.drawPath(glowPath, glowPaint);
   }
 
   @override
-  bool shouldRepaint(covariant _TracingBorderPainter oldDelegate) {
+  bool shouldRepaint(covariant _ParabolaPainter oldDelegate) {
     return oldDelegate.progress != progress ||
+        oldDelegate.inverted != inverted ||
         oldDelegate.borderColor != borderColor ||
         oldDelegate.glowColor != glowColor ||
         oldDelegate.borderWidth != borderWidth ||
         oldDelegate.glowWidth != glowWidth ||
-        oldDelegate.startAngle != startAngle ||
-        oldDelegate.borderRadius != borderRadius ||
         oldDelegate.useGradient != useGradient ||
         oldDelegate.gradientColors != gradientColors;
   }
