@@ -57,4 +57,4 @@ Add this to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  shape_progress_bar: ^1.0.1
+  shape_progress_bar: ^1.0.2

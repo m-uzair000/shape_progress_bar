@@ -1,6 +1,6 @@
 name: shape_progress_bar
 description: "Flutter package to animate the borders of boxes in fun shapes like stars, rectangles, and more — with glowing gradients and looping support."
-version: 1.0.1
+version: 1.0.2
 
 repository: https://github.com/m-uzair000/shape_progress_bar.git
 homepage: https://github.com/m-uzair000/shape_progress_bar.git

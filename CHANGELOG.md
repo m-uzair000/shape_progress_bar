@@ -1,4 +1,4 @@
-## [1.0.1] - 2025-05-27
+## [1.0.2] - 2025-05-27
 
 - Expanded support for multiple shapes: `rectangle`, `triangle`, `star`, `heart`, `oval`, `parabola`, `diamond`, `pentagon`, and `arrow`.
 - Added support for directional shapes like `arrow` with up/down/left/right options.
